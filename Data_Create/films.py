@@ -10,7 +10,7 @@ conn.execute('''CREATE TABLE Films
              Film_NAME TEXT,           
              Film_YEAR INTEGER NOT NULL CHECK(Film_YEAR>=1888),
              Film_Rating TEXT NOT NULL,
-             Film_Lenth INTEGER NOT NULL CHECK(Film_Lenth<5100),
+             Film_Length INTEGER NOT NULL CHECK(Film_Length<5100),
              Film_Genre TEXT NOT NULL)''')
             
 
