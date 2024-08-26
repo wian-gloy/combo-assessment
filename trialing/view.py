@@ -29,9 +29,31 @@ rating=["G",'PG', 'M','R13','R16','R18','RP13','RP16','R']
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
 
 action=eg.buttonbox("home page",choices=buttons)
+sort=["Name","ID","Time"]
 
 if action==buttons[0]:
-    data = pd.read_sql_query('Select * from FILMS ORDER BY Film_ID ASC;', conn)
+    how=eg.buttonbox("How would you like to sort the data",choices=sort)
+
+    #If how == Name it asks user if it should be sorted A-Z or Z-A
+    if how==sort[0]:
+        how1=eg.buttonbox("how would you like it to be ordered",choices=["A-Z","Z-A"])
+        if how1=="A-Z":
+            data = pd.read_sql_query("SELECT * FROM FILMS ORDER BY Film_NAME ASC;",conn)
+        else:
+            data = pd.read_sql_query("SELECT * FROM FILMS ORDER BY Film_NAME DESC;",conn)
+    #if how == ID it asks user how it should be sorted asc or desc
+    elif how==sort[1]:
+        how1=eg.buttonbox("how would you like it to be sorted",choices=["Ascending","Descending"])
+        if how1=="Ascending":
+            data = pd.read_sql_query("SELECT * FROM FILMS ORDER BY Film_ID ASC;",conn)
+        
+        else:
+            data = pd.read_sql_query("SELECT * FROM FILMS ORDER BY Film_ID DESC;",conn)
+
+    elif how ==sort[2]:
+        how1=eg.buttonbox("how would you like it to be sorted",choices=["Ascending","Descending",])
+        
+
     
     data_str = data.to_string(index=False)
 
