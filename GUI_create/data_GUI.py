@@ -10,9 +10,9 @@ Titles=["ID","Name","release","Rating","Length","Genre"]
 
 
 
-buttons=["View Database","Add Item","Remove Item","Edit Items","Close"]
+buttons=["View Database","Search Item","Remove Item","Edit Items","Close"]
 i=2
-rating=["G",'PG', 'M','R13','R16','R18','RP13','RP16','R']
+rating=["G",'PG','M','R13','R16','R18','RP13','RP16','R']
 
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
 
@@ -49,5 +49,14 @@ def View_db(i):
             i=6
             
         
+def search_db():
+    search_by=eg.buttonbox("select what you want to search with.",choices=["Name","ID","Year","Rating",'Genre'])
+    if search_by== "Name":
+        search=eg.enterbox(str("Enter the name of the film you are looking for"))
+        output = cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '%{search}%' ") 
+    eg.msgbox(tabulate(output, headers=Titles))
+if action==buttons[0]:
+    View_db(i)
 
-View_db(i)
+elif action==buttons[1]:
+    search_db()
