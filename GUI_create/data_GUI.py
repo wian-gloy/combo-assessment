@@ -10,13 +10,10 @@ Titles=["ID","Name","release","Rating","Length","Genre"]
 
 
 
-buttons=["View Database","Search Item","Remove Item","Edit Items","Close"]
+buttons=["View Database","Search Item","Add Item","Remove Item","Edit Items","Close"]
 i=2
 rating=["G",'PG','M','R13','R16','R18','RP13','RP16','R']
 
-eg.msgbox("Welcome to the movie the database.",title="Welcome")
-
-action=eg.buttonbox("home page",choices=buttons)
 
 def View_db(i):
     while not i == 6:
@@ -50,13 +47,51 @@ def View_db(i):
             
         
 def search_db():
-    search_by=eg.buttonbox("select what you want to search with.",choices=["Name","ID","Year","Rating",'Genre'])
+    search_by=eg.buttonbox("select what you want to search with.",choices=["Name","Rating","Genre"])
     if search_by== "Name":
         search=eg.enterbox(str("Enter the name of the film you are looking for"))
         output = cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '%{search}%' ") 
-    eg.msgbox(tabulate(output, headers=Titles))
-if action==buttons[0]:
-    View_db(i)
+        eg.msgbox(tabulate(output, headers=Titles))
+    
+    elif search_by == "Genre":
+        search=eg.buttonbox("Select the genre of the film you are looking for",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+        output = cursor.execute(f"Select * FROM Films WHERE Film_Genre LIKE '%{search}%' ") 
+        eg.msgbox(tabulate(output, headers=Titles))
 
-elif action==buttons[1]:
-    search_db()
+    elif search_by=="Rating":
+        search=eg.buttonbox("Select the rating of the film you are looking for",choices=rating)
+        output = cursor.execute(f"Select * FROM Films WHERE Film_Rating LIKE '%{search}%' ")
+        eg.msgbox(tabulate(output, headers=Titles))
+
+def Add_db():
+    input_list=["Id","Name","Year","Length"]
+
+    data=eg.multenterbox("Please enter the following details",title="data_input",fields=input_list)
+    id=int(data[0])
+    name=data[1]
+    year=int(data[2])
+    length=int(data[3])
+    rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
+    genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+    
+    cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
+                      VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
+    conn.commit()
+    
+
+eg.msgbox("Welcome to the movie the database.",title="Welcome")
+while True:
+    action=eg.buttonbox("home page",choices=buttons)
+
+    if action==buttons[0]:
+        View_db(i)
+
+    elif action==buttons[1]:
+        search_db()
+
+    elif action==buttons[2]:
+        Add_db()
+
+    
+    elif action==buttons[5]:
+        break
