@@ -78,6 +78,19 @@ def Add_db():
                       VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
     conn.commit()
     
+def remove_item():
+    search=eg.enterbox("Enter the Name of the film you want to remove")
+    cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
+    rows = cursor.fetchall()
+
+    output = tabulate(rows, headers=Titles)
+    
+    # Create a list of film names for selection
+    film_names = [row[1] for row in rows]  # Assuming Film_Name is the second column
+    
+    selected_film = eg.choicebox(output, title="Remove", choices=film_names)
+
+
 
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
 while True:
@@ -92,6 +105,8 @@ while True:
     elif action==buttons[2]:
         Add_db()
 
-    
+    elif action == buttons[3]:
+        remove_item()
+
     elif action==buttons[5]:
         break
