@@ -64,19 +64,33 @@ def search_db():
         eg.msgbox(tabulate(output, headers=Titles))
 
 def Add_db():
-    input_list=["Id","Name","Year","Length"]
+    while True:
 
-    data=eg.multenterbox("Please enter the following details",title="data_input",fields=input_list)
-    id=int(data[0])
-    name=data[1]
-    year=int(data[2])
-    length=int(data[3])
-    rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
-    genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+        input_list=["Id","Name","Year","Length"]
+
+        data=eg.multenterbox("Please enter the following details",title="data_input",fields=input_list)
+        id=int(data[0])
+        
+
+        name=data[1]
+        year=int(data[2])
+        if year<1888:
+            eg.msgbox("Year cannot be less than 1888")
+            
+        else:
+            m=0
+        length=int(data[3])
     
-    cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
-                      VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
-    conn.commit()
+        rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
+        genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+        
+        cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
+                        VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
+        conn.commit()
+        eg.msgbox("Data added successfully")
+        break
+
+
     
 def remove_item():
     search=eg.enterbox("Enter the Name of the film you want to remove")
@@ -85,10 +99,13 @@ def remove_item():
 
     output = tabulate(rows, headers=Titles)
     
-    # Create a list of film names for selection
-    film_names = [row[1] for row in rows]  # Assuming Film_Name is the second column
+    
+    film_names = [row[1] for row in rows] 
     
     selected_film = eg.choicebox(output, title="Remove", choices=film_names)
+    cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
+
+    conn.commit()
 
 
 
