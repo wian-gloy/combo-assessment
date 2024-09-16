@@ -7,7 +7,7 @@ cursor=conn.cursor()
 sort_sql=["Film_NAME ASC","Film_NAME DESC","Film_ID ASC","Film_ID DESC","Film_Length ASC","Film_Length DESC" ,"Close"]
 sort=["Name A-Z","Name Z-A","ID asc","ID desc","Time asc","Time desc","Close"]
 Titles=["ID","Name","release","Rating","Length","Genre"]
-
+genre= ["Comedy","Action","Crime","Animation","Fantasy"]
 
 
 buttons=["View Database","Search Item","Add Item","Remove Item","Edit Items","Close"]
@@ -54,7 +54,7 @@ def search_db():
         eg.msgbox(tabulate(output, headers=Titles))
     
     elif search_by == "Genre":
-        search=eg.buttonbox("Select the genre of the film you are looking for",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+        search=eg.buttonbox("Select the genre of the film you are looking for",choices=genre)
         output = cursor.execute(f"Select * FROM Films WHERE Film_Genre LIKE '%{search}%' ") 
         eg.msgbox(tabulate(output, headers=Titles))
 
@@ -101,12 +101,60 @@ def remove_item():
     
     
     film_names = [row[1] for row in rows] 
-    
-    selected_film = eg.choicebox(output, title="Remove", choices=film_names)
-    cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
+    if len(film_names)<2:
+        selected_film=eg.buttonbox(output,title="Remove",choices=film_names)
+    else:
+        selected_film = eg.choicebox(output, title="Remove", choices=film_names)
+        
+    confirm=eg.buttonbox(f"Are you sure you want to remove the film {selected_film}",title="Confirm",choices=["Yes","Cancel"])
+    if confirm == "Yes":
+        cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
+
+    else:
+        eg.msgbox("Operation cancelled")
 
     conn.commit()
 
+
+def edit_item():
+    search=eg.enterbox("Enter the Name of the film you want to edit")
+    cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
+    rows = cursor.fetchall()
+
+    output = tabulate(rows, headers=Titles)
+    
+    
+    film_names = [row[1] for row in rows] 
+    if len(film_names)<2:
+        selected_film=eg.buttonbox(output,title="Edit",choices=film_names)
+    else:
+        selected_film = eg.choicebox(output, title="Edit", choices=film_names)
+    while True:
+        action=eg.buttonbox("what would yuo like to edit",choices=["Name","release","Rating","Length","Genre","Close"])
+        if action=="Name":
+            new_name=eg.enterbox("Enter the new name")
+            cursor.execute(f"UPDATE Films SET Film_Name = '{new_name}' WHERE Film_Name LIKE '{selected_film}'")
+            
+        if action=="release":
+            new_release=eg.enterbox("Enter the new release year")
+            cursor.execute(f"UPDATE Films SET Film_YEAR = '{new_release}' WHERE Film_Name LIKE '{selected_film}'")
+
+        if action == "Rating":
+            new_rating = eg.enterbox("Enter the new rating")
+            cursor.execute(f"UPDATE Films SET Film_Rating = '{new_rating}' WHERE Film_Name LIKE '{selected_film}'")
+
+        if action == "Length":
+            new_length = eg.enterbox("Enter the new length")
+            cursor.execute(f"UPDATE Films SET Film_Length = '{new_length}' WHERE Film_Name LIKE '{selected_film}'")
+
+        if action == "Genre":
+            new_genre = eg.buttonbox("select the new genre",choices=genre)
+            cursor.execute(f"UPDATE Films SET Film_Genre = '{new_genre}' WHERE Film_Name LIKE '{selected_film}'")
+
+        if action == "Close":
+            break
+        
+        conn.commit()
 
 
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
@@ -124,6 +172,9 @@ while True:
 
     elif action == buttons[3]:
         remove_item()
+
+    elif action == buttons[4]:
+        edit_item()
 
     elif action==buttons[5]:
         break
