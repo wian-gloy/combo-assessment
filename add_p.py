@@ -73,6 +73,36 @@ def Add_db():
 
 
 
+        if data== None:
+            eg.msgbox("canceled input.")
+            break
+
+        elif any(field.strip() == "" for field in data):
+            eg.msgbox("Please fill all the fields")
+            
+        try:
+            id=int(data[0])
+        except ValueError:
+            eg.msgbox("ID must be a integer")
+
+        query = "SELECT 1 FROM films WHERE Film_ID = ? LIMIT 1"
+        cursor.execute(query, (id,))
+
+        result = cursor.fetchone()
+        if result:
+            eg.msgbox("ID already exists")
+            
+        else:
+            
+
+
+
+
+
+
+
+
+
         name=data[1]
         year=int(data[2])
         if year<1888:
@@ -90,6 +120,9 @@ def Add_db():
         conn.commit()
         eg.msgbox("Data added successfully")
         break
+
+
+
 
 
     
