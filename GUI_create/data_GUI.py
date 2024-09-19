@@ -70,31 +70,75 @@ def Add_db():
 
         data=eg.multenterbox("Please enter the following details",title="data_input",fields=input_list)
 
+        if data== None:
+            eg.msgbox("canceled input.")
+            break
+            
+        elif any(field.strip() == "" for field in data):
+            eg.msgbox("Please fill all the fields")
+            continue
+            
+        try:
+            id=int(data[0])
+            year=int(data[2])
+            length=int(data[3])
 
+        except ValueError:
+            eg.msgbox("ID ,Year and Length must be a integer")
+            continue
 
+        query = "SELECT 1 FROM films WHERE Film_ID = ? LIMIT 1"
+        cursor.execute(query, (id,))
+
+        result = cursor.fetchone()
+        if result:
+            eg.msgbox("ID already exists")
+            continue
 
         name=data[1]
-        year=int(data[2])
         if year<1888:
             eg.msgbox("Year cannot be less than 1888")
-            
-        else:
-            m=0
-        length=int(data[3])
-    
-        rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
-        genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
-        
-        cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
-                        VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
-        conn.commit()
-        eg.msgbox("Data added successfully")
+            continue
+
         break
 
+    while True:
+        rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
+        if rating_data==None:
+            eg.msgbox("Please select a rating")
+            continue
 
+        break
+
+    while True:
+        genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+        if genre==None:
+            eg.msgbox("Please select a genre")
+            continue
+
+        break
     
+    cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
+                    VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
+    conn.commit()
+    eg.msgbox("Data added successfully")
+
+
 def remove_item():
-    search=eg.enterbox("Enter the Name of the film you want to remove")
+    while True: 
+
+        search=eg.enterbox("Enter the Name of the film you want to remove")
+        if search=="":
+            eg.msgbox("Please enter a name")
+
+        elif search== None:
+            eg.msgbox("operation canceled")
+            
+
+        else:
+            break
+        
+    
     cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
     rows = cursor.fetchall()
 
