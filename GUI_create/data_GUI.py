@@ -133,30 +133,42 @@ def remove_item():
 
         elif search== None:
             eg.msgbox("operation canceled")
-            
+            break
 
         else:
-            break
+            cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
+            rows = cursor.fetchall()
+
+            output = tabulate(rows, headers=Titles)
+            
+            
+            film_names = [row[1] for row in rows] 
+            if len(film_names)==0:
+                eg.msgbox("No film found")
+                continue
+            
+            if len(film_names)<2:
+                selected_film=eg.buttonbox(output,title="Remove", choices=film_names+["Cancel"])
+                if selected_film=="Cancel":
+                    eg.msgbox("operation canceled")
+                    break
+            else:
+                selected_film = eg.choicebox(output, title="Remove", choices=film_names)
+                if selected_film==None:
+                    eg.msgbox("operation canceled")
+                    break
+                
+                
+            confirm=eg.buttonbox(f"Are you sure you want to remove the film {selected_film}",title="Confirm",choices=["Yes","Cancel"])
+            if confirm == "Yes":
+                cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
+
+            else:
+                eg.msgbox("Operation cancelled")
+                break
         
     
-    cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
-    rows = cursor.fetchall()
 
-    output = tabulate(rows, headers=Titles)
-    
-    
-    film_names = [row[1] for row in rows] 
-    if len(film_names)<2:
-        selected_film=eg.buttonbox(output,title="Remove",choices=film_names)
-    else:
-        selected_film = eg.choicebox(output, title="Remove", choices=film_names)
-        
-    confirm=eg.buttonbox(f"Are you sure you want to remove the film {selected_film}",title="Confirm",choices=["Yes","Cancel"])
-    if confirm == "Yes":
-        cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
-
-    else:
-        eg.msgbox("Operation cancelled")
 
     conn.commit()
 
