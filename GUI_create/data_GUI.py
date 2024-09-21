@@ -49,9 +49,21 @@ def View_db(i):
 def search_db():
     search_by=eg.buttonbox("select what you want to search with.",choices=["Name","Rating","Genre"])
     if search_by== "Name":
-        search=eg.enterbox(str("Enter the name of the film you are looking for"))
-        output = cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '%{search}%' ") 
-        eg.msgbox(tabulate(output, headers=Titles))
+        while True:
+            search=eg.enterbox(str("Enter the name of the film you are looking for"))
+            if search == None or search == "":
+                break
+                 
+            cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '%{search}%' ") 
+            output= cursor.fetchall()
+            if not output or len(output) == 0:
+                eg.msgbox("No results found")
+                
+            else:
+                eg.msgbox(tabulate(output, headers=Titles))
+
+            break
+                    
     
     elif search_by == "Genre":
         search=eg.buttonbox("Select the genre of the film you are looking for",choices=genre)
@@ -193,16 +205,28 @@ def edit_item():
             cursor.execute(f"UPDATE Films SET Film_Name = '{new_name}' WHERE Film_Name LIKE '{selected_film}'")
             
         if action=="release":
-            new_release=eg.enterbox("Enter the new release year")
-            cursor.execute(f"UPDATE Films SET Film_YEAR = '{new_release}' WHERE Film_Name LIKE '{selected_film}'")
+            while True:
+                try:
+                    new_release=eg.enterbox("Enter the new release year")
+                    cursor.execute(f"UPDATE Films SET Film_YEAR = '{new_release}' WHERE Film_Name LIKE '{selected_film}'")
+                    break
+                except ValueError:
+                    eg.msgbox("Invalid input")
 
+
+            
         if action == "Rating":
             new_rating = eg.enterbox("Enter the new rating")
             cursor.execute(f"UPDATE Films SET Film_Rating = '{new_rating}' WHERE Film_Name LIKE '{selected_film}'")
 
         if action == "Length":
-            new_length = eg.enterbox("Enter the new length")
-            cursor.execute(f"UPDATE Films SET Film_Length = '{new_length}' WHERE Film_Name LIKE '{selected_film}'")
+            while True:
+                try:
+                    new_length = eg.enterbox("Enter the new length in minutes")
+                    cursor.execute(f"UPDATE Films SET Film_Length = '{new_length}' WHERE Film_Name LIKE '{selected_film}'")
+                    break
+                except ValueError:
+                    eg.msgbox("Invalid input. Please enter a number")
 
         if action == "Genre":
             new_genre = eg.buttonbox("select the new genre",choices=genre)
