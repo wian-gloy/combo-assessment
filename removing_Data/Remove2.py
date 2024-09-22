@@ -93,8 +93,8 @@ def Add_db():
 
     
 def remove_item():
-    search=eg.enterbox("Enter the Name of the film you want to remove")
-    cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{search}%'")
+    id=eg.enterbox("Enter the Name of the film you want to remove")
+    cursor.execute(f"SELECT * FROM Films WHERE Film_Name LIKE '%{id}%'")
     rows = cursor.fetchall()
 
     output = tabulate(rows, headers=Titles)

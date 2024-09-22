@@ -112,28 +112,29 @@ def Add_db():
             eg.msgbox("Year cannot be less than 1888")
             continue
 
-        break
 
-    while True:
-        rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
-        if rating_data==None:
-            eg.msgbox("Please select a rating")
-            continue
+        while True:
+            rating_data=eg.buttonbox("Select the rating of the film",choices=rating)
+            if rating_data==None:
+                eg.msgbox("Please select a rating")
+                continue
 
-        break
+            break
 
-    while True:
-        genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
-        if genre==None:
-            eg.msgbox("Please select a genre")
-            continue
+        while True:
+            genre=eg.buttonbox("Select the genre of the film",choices=["Comedy","Action","Crime","Animation","Fantasy"])
+            if genre==None:
+                eg.msgbox("Please select a genre")
+                continue
 
-        break
+            break
     
-    cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
-                    VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
-    conn.commit()
-    eg.msgbox("Data added successfully")
+        cursor.execute('''INSERT INTO Films (Film_ID, Film_NAME, Film_YEAR, Film_Rating, Film_Length, Film_Genre)
+                        VALUES (?, ?, ?, ?, ?, ?)''', (id,name,year,rating_data,length,genre))
+        conn.commit()
+        eg.msgbox("Data added successfully")
+        break
+
 
 
 def remove_item():
@@ -239,6 +240,7 @@ def edit_item():
 
 
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
+
 while True:
     action=eg.buttonbox("home page",choices=buttons)
 
@@ -256,6 +258,6 @@ while True:
 
     elif action == buttons[4]:
         edit_item()
-
+         
     elif action==buttons[5]:
         break
