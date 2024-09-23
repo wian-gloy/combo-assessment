@@ -82,10 +82,10 @@ def Add_db():
 
         data=eg.multenterbox("Please enter the following details",title="data_input",fields=input_list)
 
-        if data== None:
+        if data == None:
             eg.msgbox("canceled input.")
             break
-            
+        
         elif any(field.strip() == "" for field in data):
             eg.msgbox("Please fill all the fields")
             continue
