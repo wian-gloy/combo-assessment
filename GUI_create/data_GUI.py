@@ -195,12 +195,16 @@ def edit_item():
     
     
     film_names = [row[1] for row in rows] 
-    if len(film_names)<2:
+    if len(film_names)==0:
+        eg.msgbox("No film found")
+        return
+    
+    elif len(film_names)<2:
         selected_film=eg.buttonbox(output,title="Edit",choices=film_names)
     else:
         selected_film = eg.choicebox(output, title="Edit", choices=film_names)
     while True:
-        action=eg.buttonbox("what would yuo like to edit",choices=["Name","release","Rating","Length","Genre","Close"])
+        action=eg.buttonbox("what would you like to edit",choices=["Name","release","Rating","Length","Genre","Close"])
         if action=="Name":
             new_name=eg.enterbox("Enter the new name")
             cursor.execute(f"UPDATE Films SET Film_Name = '{new_name}' WHERE Film_Name LIKE '{selected_film}'")
