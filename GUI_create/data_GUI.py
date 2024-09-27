@@ -14,7 +14,7 @@ buttons=["View Database","Search Item","Add Item","Remove Item","Edit Items","Cl
 i=2
 rating=["G",'PG','M','R13','R16','R18','RP13','RP16','R']
 
-
+#function displayes the data base
 def View_db(i):
     while not i == 6:
         output=[]
@@ -23,6 +23,7 @@ def View_db(i):
             output.append(row)
 
         list=tabulate(output, headers=Titles)
+        #gives user option how to sort data 
         sortby=eg.buttonbox(list,choices=sort)
         if sortby == sort[0]:
             i=0
@@ -45,9 +46,10 @@ def View_db(i):
         elif sortby == sort[6]:
             i=6
             
-        
+#search database for specific movie 
 def search_db():
     search_by=eg.buttonbox("select what you want to search with.",choices=["Name","Rating","Genre"])
+
     if search_by== "Name":
         while True:
             search=eg.enterbox(str("Enter the name of the film you are looking for"))
@@ -75,6 +77,7 @@ def search_db():
         output = cursor.execute(f"Select * FROM Films WHERE Film_Rating LIKE '%{search}%' ")
         eg.msgbox(tabulate(output, headers=Titles))
 
+#Add film to database
 def Add_db():
     while True:
 
@@ -86,7 +89,7 @@ def Add_db():
             eg.msgbox("canceled input.")
             break
         
-        elif any(field.strip() == "" for field in data):
+        elif any(field.strip() == "" for field in data):#checks that none of the inputs are empty 
             eg.msgbox("Please fill all the fields")
             continue
             
@@ -98,16 +101,29 @@ def Add_db():
         except ValueError:
             eg.msgbox("ID ,Year and Length must be a integer")
             continue
+        
+        if id < 1:
+            eg.msgbox("ID must be greater than 0")
+            continue
 
-        query = "SELECT 1 FROM films WHERE Film_ID = ? LIMIT 1"
-        cursor.execute(query, (id,))
+        query_id = "SELECT 1 FROM films WHERE Film_ID = ? LIMIT 1"
+        cursor.execute(query_id, (id,))
 
-        result = cursor.fetchone()
-        if result:
+        result_id = cursor.fetchone()
+        if result_id:
             eg.msgbox("ID already exists")
             continue
 
         name=data[1]
+        query_name = "SELECT 1 FROM films WHERE Film_NAME = ? LIMIT 1"
+        cursor.execute(query_name, (name,))
+        result_name = cursor.fetchone()
+        
+        if result_name:
+            eg.msgbox("Movie name already exists")
+            continue
+
+        
         if year<1888:
             eg.msgbox("Year cannot be less than 1888")
             continue
@@ -136,7 +152,7 @@ def Add_db():
         break
 
 
-
+#removes item from database
 def remove_item():
     while True: 
 
@@ -175,6 +191,7 @@ def remove_item():
             confirm=eg.buttonbox(f"Are you sure you want to remove the film {selected_film}",title="Confirm",choices=["Yes","Cancel"])
             if confirm == "Yes":
                 cursor.execute(f"DELETE FROM Films WHERE Film_Name LIKE '{selected_film}'")
+                break
 
             else:
                 eg.msgbox("Operation cancelled")
@@ -185,7 +202,7 @@ def remove_item():
 
     conn.commit()
 
-
+#Edit movie in database
 def edit_item():
     while True :
         search=eg.enterbox("Enter the Name of the film you want to edit")
@@ -219,16 +236,30 @@ def edit_item():
                
                 if action=="Name":
                     new_name=eg.enterbox("Enter the new name")
+                    if new_name == "" or new_name == None:
+                        eg.msgbox("Please enter a name")
+                        continue
+
+
                     cursor.execute(f"UPDATE Films SET Film_Name = '{new_name}' WHERE Film_Name LIKE '{selected_film}'")
                     
                 if action=="release":
                     while True:
                         try:
-                            new_release=eg.enterbox("Enter the new release year")
-                            cursor.execute(f"UPDATE Films SET Film_YEAR = '{new_release}' WHERE Film_Name LIKE '{selected_film}'")
-                            break
+                            new_release=int(eg.enterbox("Enter the new release year"))
+                            if new_release < 1888:
+                                eg.msgbox("Release year must be greater than 1888")
+                                continue
+                            elif new_release == "" or new_release == None:
+                                eg.msgbox("Please enter a release year")
+                                continue
+                            else:
+
+                                cursor.execute(f"UPDATE Films SET Film_YEAR = '{new_release}' WHERE Film_Name LIKE '{selected_film}'")
+                                break
                         except ValueError:
                             eg.msgbox("Invalid input")
+                            continue
 
 
                     
@@ -239,11 +270,19 @@ def edit_item():
                 if action == "Length":
                     while True:
                         try:
-                            new_length = eg.enterbox("Enter the new length in minutes")
-                            cursor.execute(f"UPDATE Films SET Film_Length = '{new_length}' WHERE Film_Name LIKE '{selected_film}'")
-                            break
+                            new_length = int(eg.enterbox("Enter the new length in minutes"))
+                            if new_length < 0:
+                                eg.msgbox("Length must be greater than 0")
+                                continue
+                            elif new_length == "" or new_length == None:
+                                eg.msgbox("Please enter a length")
+                                continue
+                            else:
+                                cursor.execute(f"UPDATE Films SET Film_Length = '{new_length}' WHERE Film_Name LIKE '{selected_film}'")
+                                break
                         except ValueError:
                             eg.msgbox("Invalid input. Please enter a number")
+                            continue
 
                 if action == "Genre":
                     new_genre = eg.buttonbox("select the new genre",choices=genre)
@@ -253,10 +292,13 @@ def edit_item():
                     break
                 
                 conn.commit()
+                
+            break
 
-
+#startup message
 eg.msgbox("Welcome to the movie the database.",title="Welcome")
 
+#main menu that runs untill user clicks close 
 while True:
     action=eg.buttonbox("home page",choices=buttons)
 
@@ -277,3 +319,4 @@ while True:
          
     elif action==buttons[5]:
         break
+    

@@ -50,7 +50,7 @@ def search_db():
     search_by=eg.buttonbox("select what you want to search with.",choices=["Name","Rating","Genre"])
     if search_by== "Name":
         search=eg.enterbox(str("Enter the name of the film you are looking for"))
-        output = cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '{search}' ") 
+        output = cursor.execute(f"Select * FROM Films WHERE Film_Name LIKE '%{search}%' ") 
         eg.msgbox(tabulate(output, headers=Titles))
     
     elif search_by == "Genre":
